@@ -2,14 +2,14 @@
 This is a tiny script I used to convert paths from SVG graphics to numerical values. Matplotlib will plot the data so you can check it.
 
 ## Requirements
-Numpy, Matplotlib
+Python3, Numpy, Matplotlib
 
 ## Extract SVGs from PDF
 Example pdf: https://arxiv.org/pdf/1511.04056.pdf
 
 Import relevant page from PDF with Inkscape. Find the xml paths of the line (not the points). The easiest way is to click on it and enter all groups on the way. At the same time look at XML editor (Ctrl+Shift+X in inkscape).
 
-E.g. (`single_plot.svg`)
+E.g. (`SensIT_train.svg`)
 ```
 <path
    id="path5451"
@@ -22,7 +22,7 @@ The string after `d=` is what we want. Copy those strings into JSON file.
 ## Provide Reference values
 Now, we need to provide the scale of X- and Y-Axis. Simply lookup two ticks in inkscape (enter all groups and look at XML editor).
 
-For example in `single_plot.json`: the y-tick at `0.6` is at `81.79125` in SVG coordinates. Respectively, `y = 0.7` at `116.35125`, `x = 6` at `67.784615` and `x = 8` at `102.12308`.
+For example in `SensIT_train.json`: the y-tick at `0.6` is at `81.79125` in SVG coordinates. Respectively, `y = 0.7` at `116.35125`, `x = 6` at `67.784615` and `x = 8` at `102.12308`.
 
 ## Save stuff as json
 ```
@@ -44,6 +44,7 @@ Note that the keys in the data directory will be used as labels for the test plo
 
 ## Run script
 ```
-python SVGPath2Numeric.py --json single_plot.json
+python SVGPath2Numeric.py -o SensIT_train_num.json SensIT_train.json
 ```
 The script will output the converted values and show you a plot so you can compare the result.
+Optionally, you can specify an output JSON file, so you can use the converted data in another script (see `SensIT_train_num.json`).

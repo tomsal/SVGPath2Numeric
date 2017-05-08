@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
 import numpy as np
-import ipdb
 import argparse
 import json
 from matplotlib import pyplot as plt
 
+# loads JSON file. Returns plot labels, converted X and Y values.
 def load_json(jsonfile):
   json_dir = json.load(open(jsonfile, 'r'))
 
@@ -21,6 +21,8 @@ def load_json(jsonfile):
 
   return names, X_nums, Y_nums
 
+# Parses a path string and returns numerical values in canvas/layer
+# coordinates.
 def parse_path(path):
   if path[0:2] == 'm ' or path[0:2] == 'M ':
     path = path[2:]
@@ -32,6 +34,7 @@ def parse_path(path):
 
   return np.array(pairs)
 
+# Computes reference point and step size in both coordinates.
 def get_Y_refs(Y1, Y2):
   Y1 = np.array(list(map(float, Y1.split(','))))
   Y2 = np.array(list(map(float, Y2.split(','))))
@@ -40,34 +43,39 @@ def get_Y_refs(Y1, Y2):
 
   return Y1, diff
 
+# Converts a path string given to reference points. Axis lets you choose
+# between X and Y coordinates.
 def convert_units(path, ref1, ref2, axis=0):
-  # We actually do not care about X-values pairs[:,0],
-  # because they're the same in all plots.
   pairs = parse_path(path)
   ref, diff = get_Y_refs(ref1, ref2)
 
   s = (pairs[:,axis] - ref[1]) / diff[1]
   return ref[0] + s * diff[0]
 
-parser = argparse.ArgumentParser(description="Plot score files") 
-parser.add_argument("--json", type=str,
-                    help="Json file.")
-#parser.add_argument("--path", type=str,
-#                    help="Path string.")
-#parser.add_argument("--Y1", type=str,
-#                    help="Y1 ref pair. E.g. 0.6,81.79125")
-#parser.add_argument("--Y2", type=str,
-#                    help="Y2 ref pair. E.g. 0.7,116.35125")
+parser = argparse.ArgumentParser(description="Convert SVG path of plots to "
+                                             "numerical values.")
+parser.add_argument("json", type=str,
+                    help="JSON file.")
+parser.add_argument("-o", "--outfile", type=str,
+                    help="JSON output file.")
 
 args=parser.parse_args()  
 
+# Load data from json
 names, Xs, Ys = load_json(args.json)
 
+converted_data = {}
 for name, x, y in zip(names, Xs, Ys):
+  # Directory for JSON output file.
+  converted_data[name] = [x.tolist(), y.tolist()]
   print("---------- {}\nX = {}\nY = {}".format(name, x, y))
+
+  # Test plot.
   plt.plot(x, y, label=name)
 plt.legend()
-    
-#Y = convert_Y_units(args.path, args.Y1, args.Y2)
+
+# Write output.
+if args.outfile:
+  json.dump(converted_data, open(args.outfile, 'w'))
+
 plt.show()
-#ipdb.set_trace()
