@@ -58,6 +58,8 @@ parser.add_argument("json", type=str,
                     help="JSON file.")
 parser.add_argument("-o", "--outfile", type=str,
                     help="JSON output file.")
+parser.add_argument("-q", "--quiet", action='store_true',
+                    help="Disalbe plot and console output.")
 
 args=parser.parse_args()  
 
@@ -68,14 +70,15 @@ converted_data = {}
 for name, x, y in zip(names, Xs, Ys):
   # Directory for JSON output file.
   converted_data[name] = [x.tolist(), y.tolist()]
-  print("---------- {}\nX = {}\nY = {}".format(name, x, y))
-
-  # Test plot.
-  plt.plot(x, y, label=name)
-plt.legend()
+  if not args.quiet:
+    print("---------- {}\nX = {}\nY = {}".format(name, x, y))
+    # Test plot.
+    plt.plot(x, y, label=name)
 
 # Write output.
 if args.outfile:
   json.dump(converted_data, open(args.outfile, 'w'))
 
-plt.show()
+if not args.quiet:
+  plt.legend()
+  plt.show()

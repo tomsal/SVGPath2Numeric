@@ -48,3 +48,11 @@ python SVGPath2Numeric.py -o SensIT_train_num.json SensIT_train.json
 ```
 The script will output the converted values and show you a plot so you can compare the result.
 Optionally, you can specify an output JSON file, so you can use the converted data in another script (see `SensIT_train_num.json`).
+
+## Bash batch
+
+Run script on all files in directory `json` and save to directory `num`.
+`-q` disables plot and console output.
+```
+for file in `ls json`; do python SVGPath2Numeric.py -o num/$file -q json/$file; done
+```
